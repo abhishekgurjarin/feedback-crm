@@ -34,7 +34,7 @@ jobs:
     - name: Install Server Dependencies & Generate Prisma Client
       run: |
         cd server
-        npm install
+        npm install --no-package-lock
         npx prisma generate
 
     - name: Run Backend Linter & Type Check
@@ -52,7 +52,7 @@ jobs:
     - name: Install Client Dependencies & Build Web Application
       run: |
         cd client
-        npm install
+        npm install --no-package-lock
         npm run build
 
     - name: Verify Docker Production Build
