@@ -1,0 +1,27 @@
+{
+  "name": "acowale-pulse-crm",
+  "version": "1.0.0",
+  "description": "Acowale Pulse CRM — Customer Feedback & Trend Intelligence Platform (Machine Test by Abhishek)",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "build": "cd client && npm run build && cd ../server && npm run build",
+    "start": "cd server && npm start",
+    "test": "cd server && npm test",
+    "db:push": "cd server && npm run db:push",
+    "db:seed": "cd server && npm run db:seed",
+    "db:reset": "cd server && npm run db:reset"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

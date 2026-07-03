@@ -1,0 +1,56 @@
+name: Acowale Pulse CRM CI/CD
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    name: Build & Test Full-Stack CRM
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: |
+          server/package-lock.json
+          client/package-lock.json
+
+    - name: Install Server Dependencies & Generate Prisma Client
+      run: |
+        cd server
+        npm ci
+        npx prisma generate
+
+    - name: Run Backend Linter & Type Check
+      run: |
+        cd server
+        npm run build
+
+    - name: Run Backend Automated Unit & Integration Tests
+      run: |
+        cd server
+        npx prisma db push --force-reset
+        npm run db:seed
+        npm test
+
+    - name: Install Client Dependencies & Build Web Application
+      run: |
+        cd client
+        npm ci
+        npm run build
+
+    - name: Verify Docker Production Build
+      run: docker build -t acowale-pulse-crm:test .

@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Feedback {
+  id          String   @id @default(uuid())
+  title       String
+  category    String   // e.g., "Bug Report", "Feature Request", "UI/UX", "Performance", "Praise", "Other"
+  rating      Int      // 1 to 5 stars / NPS score
+  comment     String
+  userEmail   String?
+  userName    String?
+  status      String   @default("NEW") // "NEW", "REVIEWED", "IN_PROGRESS", "RESOLVED"
+  adminNotes  String?  // Internal team notes for collaboration
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model AdminUser {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("ADMIN") // "ADMIN", "SUPER_ADMIN", "ANALYST"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  adminId     String
+  action      String   // e.g., "STATUS_UPDATE", "LOGIN", "EXPORT_DATA"
+  details     String?
+  timestamp   DateTime @default(now())
+
+  @@index([adminId])
+  @@index([timestamp])
+}
