@@ -14,6 +14,7 @@ RUN npm run build
 # Stage 2: Build Server Backend & Prisma
 FROM node:22-alpine AS build-server
 WORKDIR /app/server
+ENV DATABASE_URL="file:./prod.db"
 COPY server/package*.json ./
 COPY server/prisma ./prisma
 RUN npm ci
@@ -28,10 +29,10 @@ ENV NODE_ENV=production
 ENV PORT=5000
 ENV DATABASE_URL="file:./prod.db"
 
-# Install only production dependencies
+# Install dependencies for Prisma CLI and TSX seeding
 COPY server/package*.json ./
 COPY server/prisma ./prisma
-RUN npm ci --only=production
+RUN npm ci
 RUN npx prisma generate
 
 # Copy built artifacts from stage 1 and 2
